@@ -6,10 +6,11 @@ import {
   LayoutDashboard, Scale, KanbanSquare, Users, UserCog, Calendar, DollarSign,
   Headphones, FileBarChart, BarChart3, Newspaper, Search, FolderOpen, Globe,
   FileText, Menu, Bell, Settings, HelpCircle, LogOut,
+  type LucideIcon,
 } from 'lucide-react';
 import { logoutAction } from '@/app/auth/actions';
 
-type NavItem = { href: string; label: string; icon: React.ComponentType<{ size?: number }> };
+type NavItem = { href: string; label: string; icon: LucideIcon };
 const NAV: NavItem[] = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/processos', label: 'Processos', icon: Scale },

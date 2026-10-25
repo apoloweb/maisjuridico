@@ -1,17 +1,31 @@
 // Cliente Supabase para uso NO SERVIDOR (Server Components / Server Actions).
 // Usa a SERVICE ROLE key — NUNCA importar isto em código de cliente.
-import { createClient } from '@supabase/supabase-js';
+// Inicialização LAZY: só cria o cliente (e exige as env vars) no primeiro uso,
+// para que o `next build` não falhe quando as variáveis ainda não estão setadas.
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
-const url = process.env.SUPABASE_URL;
-const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+let _client: SupabaseClient | null = null;
 
-if (!url || !serviceKey) {
-  // Mensagem clara em dev caso falte configurar o .env.local
-  throw new Error(
-    'Supabase não configurado. Defina SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY em .env.local (veja .env.example).',
-  );
+function getClient(): SupabaseClient {
+  if (_client) return _client;
+  const url = process.env.SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !serviceKey) {
+    throw new Error(
+      'Supabase não configurado. Defina SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY em .env.local (veja .env.example).',
+    );
+  }
+  _client = createClient(url, serviceKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+  return _client;
 }
 
-export const supabaseAdmin = createClient(url, serviceKey, {
-  auth: { persistSession: false, autoRefreshToken: false },
+// Proxy: adia a criação do cliente até o primeiro acesso de propriedade (runtime).
+export const supabaseAdmin = new Proxy({} as SupabaseClient, {
+  get(_target, prop) {
+    const client = getClient();
+    const value = (client as unknown as Record<string | symbol, unknown>)[prop];
+    return typeof value === 'function' ? (value as (...a: unknown[]) => unknown).bind(client) : value;
+  },
 });

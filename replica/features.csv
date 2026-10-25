@@ -1,0 +1,50 @@
+feature,area,priority,original,clone,notes
+Login com usuário e senha,auth,must,yes,no,M0 usa sessão fake; auth real no /replica-backend
+Recuperação de senha,auth,must,yes,no,
+Cadastro de novo usuário / conta,auth,must,yes,no,
+Dashboard com métricas do escritório,dashboard,must,yes,partial,cards + gráfico de barras com dados fake
+Busca rápida por número de processo,dashboard,should,yes,no,
+Cadastro e gestão de processos,processos,must,yes,yes,lista + filtros + form de criação
+Processo: partes com posição (autor/réu/etc),processos,must,yes,partial,cliente+posição no form; adverso pendente
+Processo: vínculo com advogados/equipe,processos,must,yes,no,
+Lookups customizáveis (classe/natureza/rito/fase/fórum/comarca/vara),processos,should,yes,partial,selects fixos; CRUD de lookups pendente
+Campos personalizados,processos,should,yes,no,
+Lixeira de processos,processos,could,yes,no,
+Gestão de clientes/pessoas,clientes,must,yes,yes,lista + busca + form (com acesso ao portal)
+Cadastro de adversos e advogados adversos,clientes,should,yes,no,
+Contatos / Partes,clientes,could,yes,no,
+Importação em lote via planilha,onboarding,should,yes,no,
+Importação inicial via nome e OAB,onboarding,could,yes,skip,depende da fonte dos tribunais
+Portal do cliente (área do cliente),portal cliente,must,yes,yes,/portal com layout próprio; privacidade respeitada
+Acesso multiusuário (equipe/advogados),equipe,should,yes,yes,lista + form (OAB/papel/grupo) + contagem vs limite do plano
+Grupo de advogados,equipe,could,yes,partial,grupo é campo do advogado; CRUD de grupos pendente
+Agenda de compromissos (calendário),agenda,must,yes,partial,lista + forms; grade mês/semana/dia pendente
+Controle de prazos,agenda,must,yes,yes,lista + form + indicador de atraso
+Alertas por e-mail e SMS,agenda,should,yes,no,
+Integração com Google Agenda,agenda,could,yes,no,
+Controle financeiro (receitas/despesas),financeiro,must,yes,yes,lista + resumo + form de lançamento
+Contas bancárias e saldo,financeiro,must,yes,partial,saldo calculado; CRUD de contas pendente
+Categorias e subcategorias,financeiro,should,yes,partial,categoria no form; subcategorias pendentes
+Transferências entre contas,financeiro,should,yes,no,
+Lançamentos recorrentes,financeiro,should,yes,partial,campo de recorrência; materialização pendente
+Vencimentos (contas a pagar/receber),financeiro,should,yes,partial,resumo a receber/a pagar
+Honorários e custas,financeiro,should,yes,partial,como categorias
+Editor de textos e modelos de documentos,documentos,must,yes,yes,lista + criar com mala-direta
+Armazenamento de arquivos em nuvem (GED),documentos,must,yes,yes,pastas + upload (demo) + cota + lista
+Compartilhar documentos (equipe/clientes),documentos,should,yes,yes,flag compartilhar; aparece no portal
+Workflow (kanban de tarefas),tarefas,should,yes,yes,quadro com 3 colunas + criar + mover (drag pendente)
+Relatórios filtráveis,relatorios,must,yes,yes,relatórios de processos/financeiro/prazos com seletor
+Estatísticas e gráficos,relatorios,should,yes,yes,KPIs + barras (status de processos, financeiro)
+Atendimento a clientes (SAC),suporte,could,yes,yes,lista com status + form; aparece no portal
+Envio de SMS,suporte,could,yes,partial,nota de integração; disparo real no backend
+Aniversariantes,suporte,could,yes,yes,aniversariantes do mês na tela de SAC
+Histórico de atividades e de acessos (auditoria),admin,should,yes,no,
+Publicações dos diários oficiais (monitorar nome/OAB),publicacoes,must,yes,partial,estado "gated por plano"; captura pendente (M3)
+Andamentos processuais automáticos (CNJ tribunais),andamentos,must,yes,no,depende de API de terceiro (M3)
+Andamentos manuais,andamentos,must,yes,yes,lista + form por processo
+Planos e assinatura (cartão/boleto),billing,must,yes,no,
+Site + domínio para a advocacia,site,could,yes,skip,fora do MVP
+Caixas de e-mail com domínio próprio,email,could,yes,skip,fora do MVP
+Suporte via WhatsApp / chamado,suporte,could,yes,no,
+Navegação completa (15 módulos na sidebar),shell,must,yes,yes,AppShell responsivo com todas as rotas
+Design system (tokens + primitivas),design,must,yes,yes,Button/Input/Card/Table/EmptyState/StatusPill com tokens

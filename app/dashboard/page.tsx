@@ -32,10 +32,12 @@ export default async function DashboardPage() {
       <div className="mt-4 grid gap-4 lg:grid-cols-3">
         <Card className="p-4 lg:col-span-2">
           <h2 className="mb-4 text-sm font-semibold text-text">Receitas — últimos 12 meses</h2>
-          <div className="flex h-40 items-end gap-1.5" role="img" aria-label="Gráfico de receitas dos últimos 12 meses">
+          <div className="flex h-44 gap-1.5" role="img" aria-label="Gráfico de receitas dos últimos 12 meses">
             {d.receitas12m.map((m) => (
-              <div key={m.mes} className="flex flex-1 flex-col items-center gap-1">
-                <div className="w-full rounded-t-sm bg-accent/80" style={{ height: `${(m.valorCents / max) * 100}%` }} />
+              <div key={m.mes} className="flex flex-1 flex-col items-center gap-1" title={`${m.mes}: ${formatBRL(m.valorCents)}`}>
+                <div className="flex w-full flex-1 items-end">
+                  <div className="w-full rounded-t-sm bg-accent" style={{ height: `${Math.max(2, (m.valorCents / max) * 100)}%` }} />
+                </div>
                 <span className="text-[10px] text-muted">{m.mes}</span>
               </div>
             ))}

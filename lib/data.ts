@@ -176,14 +176,29 @@ export async function getDashboard(): Promise<DashboardResumo> {
     listCompromissos(),
     db.from('processos').select('id', { count: 'exact', head: true }),
   ]);
-  const receitasMesCents = lanc.filter((l) => l.tipo === 'receita' && l.situacao === 'pago').reduce((s, l) => s + l.valorCents, 0);
-  const meses = ['11/25', '12/25', '01/26', '02/26', '03/26', '04/26', '05/26', '06/26', '07/26', '08/26', '09/26', '10/26'];
+  const now = new Date();
+  const ym = (dt: Date) => `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}`;
+  const mesAtual = ym(now);
+  const receitasMesCents = lanc
+    .filter((l) => l.tipo === 'receita' && l.situacao === 'pago' && l.vencimento.slice(0, 7) === mesAtual)
+    .reduce((s, l) => s + l.valorCents, 0);
+  const eventosMes = comps.filter((c) => c.inicioAt.slice(0, 7) === mesAtual).length;
+  const meses = Array.from({ length: 12 }, (_, i) => {
+    const dt = new Date(now.getFullYear(), now.getMonth() - (11 - i), 1);
+    return { key: ym(dt), label: `${String(dt.getMonth() + 1).padStart(2, '0')}/${String(dt.getFullYear()).slice(2)}` };
+  });
+  const receitas12m = meses.map((m) => ({
+    mes: m.label,
+    valorCents: lanc
+      .filter((l) => l.tipo === 'receita' && l.vencimento.slice(0, 7) === m.key)
+      .reduce((s, l) => s + l.valorCents, 0),
+  }));
   return {
     receitasMesCents,
-    eventosMes: comps.length,
+    eventosMes,
     processosMes: procsCount.count ?? 0,
     publicacoesMes: 0,
-    receitas12m: meses.map((mes, i) => ({ mes, valorCents: i >= 9 ? (i - 8) * 250000 : 0 })),
+    receitas12m,
     compromissos: comps.slice(0, 5),
   };
 }

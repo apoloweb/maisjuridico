@@ -1,28 +1,31 @@
 import type { Config } from 'tailwindcss';
 
-// Cores apontam para as CSS vars de app/globals.css (tokens do design system).
+// Cores via CSS vars em RGB-channels: rgb(var(--x) / <alpha-value>) habilita
+// os modificadores de opacidade do Tailwind (ex.: bg-accent/80, text-muted/60).
+const c = (v: string) => `rgb(var(${v}) / <alpha-value>)`;
+
 const config: Config = {
   content: ['./app/**/*.{ts,tsx}', './components/**/*.{ts,tsx}'],
   theme: {
     extend: {
       colors: {
-        bg: 'var(--color-bg)',
-        surface: 'var(--color-surface)',
-        border: 'var(--color-border)',
-        'border-input': 'var(--color-border-input)',
-        text: 'var(--color-text)',
-        muted: 'var(--color-text-muted)',
-        accent: 'var(--color-accent)',
-        'on-accent': 'var(--color-on-accent)',
-        cta: 'var(--color-cta)',
-        'on-cta': 'var(--color-on-cta)',
-        danger: 'var(--color-danger)',
-        success: 'var(--color-success)',
-        warning: 'var(--color-warning)',
-        sidebar: 'var(--color-sidebar)',
-        'on-sidebar': 'var(--color-on-sidebar)',
-        'sidebar-muted': 'var(--color-sidebar-muted)',
-        'sidebar-active': 'var(--color-sidebar-active)',
+        bg: c('--color-bg'),
+        surface: c('--color-surface'),
+        border: c('--color-border'),
+        'border-input': c('--color-border-input'),
+        text: c('--color-text'),
+        muted: c('--color-text-muted'),
+        accent: c('--color-accent'),
+        'on-accent': c('--color-on-accent'),
+        cta: c('--color-cta'),
+        'on-cta': c('--color-on-cta'),
+        danger: c('--color-danger'),
+        success: c('--color-success'),
+        warning: c('--color-warning'),
+        sidebar: c('--color-sidebar'),
+        'on-sidebar': c('--color-on-sidebar'),
+        'sidebar-muted': c('--color-sidebar-muted'),
+        'sidebar-active': c('--color-sidebar-active'),
       },
       fontFamily: { sans: 'var(--font-sans)', mono: 'var(--font-mono)' },
       fontSize: {

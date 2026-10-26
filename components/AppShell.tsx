@@ -56,7 +56,7 @@ export function AppShell({ children, userEmail }: { children: React.ReactNode; u
                   aria-current={active ? 'page' : undefined}
                   onClick={() => setOpen(false)}
                   className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm ${
-                    active ? 'bg-sidebar-active font-semibold text-on-accent' : 'text-on-sidebar/90 hover:bg-white/5'
+                    active ? 'bg-sidebar-active font-semibold text-on-accent' : 'text-on-sidebar hover:bg-white/10'
                   }`}
                 >
                   <Icon size={18} />

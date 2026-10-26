@@ -8,8 +8,12 @@ const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
 if (!url || !key) { console.error('Faltam SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY'); process.exit(1); }
 const db = createClient(url, key, { auth: { persistSession: false } });
 
-const ALL = '00000000-0000-0000-0000-000000000000';
-const ins = async (t, rows) => { const { error } = await db.from(t).insert(rows); if (error) { console.error(t, error.message); process.exit(1); } console.log(`+ ${rows.length} ${t}`); };
+// org padrão (requer a migração 0002 aplicada). Todos os dados de demo entram nela.
+let { data: orgRow } = await db.from('orgs').select('id').order('created_at').limit(1).maybeSingle();
+let orgId = orgRow?.id;
+if (!orgId) { const r = await db.from('orgs').insert({ nome: 'Escritório Demo' }).select('id').single(); if (r.error) { console.error('orgs', r.error.message); process.exit(1); } orgId = r.data.id; }
+console.log('org:', orgId);
+const ins = async (t, rows) => { const withOrg = rows.map((r) => ({ ...r, org_id: orgId })); const { error } = await db.from(t).insert(withOrg); if (error) { console.error(t, error.message); process.exit(1); } console.log(`+ ${rows.length} ${t}`); };
 const d = (y, m, day) => `${y}-${String(m).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 const cents = (reais) => Math.round(reais * 100);
 
@@ -19,7 +23,7 @@ const M = HOJE.getMonth() + 1;
 
 // ---- limpar (ordem: filhos primeiro) ----
 for (const t of ['andamentos','tarefas','prazos','compromissos','atendimentos','arquivos','lancamentos','modelos_texto','advogados','pastas','processos','pessoas']) {
-  const { error } = await db.from(t).delete().neq('id', ALL);
+  const { error } = await db.from(t).delete().eq('org_id', orgId);
   if (error) console.error('del', t, error.message);
 }
 console.log('tabelas limpas');

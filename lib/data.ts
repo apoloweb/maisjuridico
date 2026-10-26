@@ -1,11 +1,21 @@
 // Camada de dados REAL (Supabase/Postgres). Mantém as MESMAS assinaturas da
 // versão fake anterior — por isso nenhuma tela precisou mudar.
 // Roda só no servidor (Server Components / Server Actions) via service role.
-import { supabaseAdmin as db } from './supabase';
+import { createClient } from './supabase/server';
 import type {
   Pessoa, Processo, DashboardResumo, Lancamento, Prazo, Compromisso,
   ModeloTexto, Pasta, Arquivo, Atendimento, Advogado, Tarefa, Andamento, ColunaTarefa,
 } from './types';
+
+// Cliente de SESSÃO por request: respeita RLS (org_id = current_org()).
+// Proxy adia a criação até o uso (dentro do escopo da request).
+const db = new Proxy({} as ReturnType<typeof createClient>, {
+  get(_t, prop) {
+    const c = createClient();
+    const v = (c as unknown as Record<string | symbol, unknown>)[prop];
+    return typeof v === 'function' ? (v as (...a: unknown[]) => unknown).bind(c) : v;
+  },
+});
 
 function must<T>(res: { data: T | null; error: { message: string } | null }): T {
   if (res.error) throw new Error(`Supabase: ${res.error.message}`);

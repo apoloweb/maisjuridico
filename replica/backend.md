@@ -26,7 +26,7 @@ Projeto: `https://wkdkwdemlavlajqpmzjy.supabase.co`.
 - [ ] **Rotacionar a secret key** (foi compartilhada no chat).
 - [x] **Autenticação (Supabase Auth)**: login/signup/logout + middleware protegendo todas as rotas do painel; validado (redirect sem sessão, login, logout). Usuário de teste em `replica/dev-credentials.txt`.
 - [ ] Validação de entrada no servidor (zod) nas server actions.
-- [ ] Autorização por org (RLS multi-tenant), testada com 2º usuário. (hoje: single-tenant, qualquer usuário logado vê tudo)
+- [x] **Multi-tenant por org + RLS** (migração 0002): `org_id` em todas as tabelas, `org_members` liga auth→org, `current_org()`, trigger de signup cria org nova, RLS `org_id = current_org()`. App usa o cliente de sessão (respeita RLS). Portal lê via service role, escopado por org. (validar com 2º usuário)
 - [ ] Restringir signup (hoje aberto) — tornar convite/por-org antes do launch.
 - [ ] Auth própria do portal do cliente (hoje /portal é aberto por ?login=).
 - [ ] Rate limit em auth/signup/envio de e-mail e SMS.

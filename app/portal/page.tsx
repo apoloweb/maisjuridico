@@ -1,22 +1,27 @@
-import { getPessoaByLogin, listProcessos, listArquivos, listAtendimentos, formatBytes } from '@/lib/data';
+import { supabaseAdmin } from '@/lib/supabase';
+import { formatBytes } from '@/lib/data';
 import { Card, StatusPill, EmptyState } from '@/components/ui';
 import { FileIcon } from 'lucide-react';
 
-// Demo do portal: o cliente é identificado por ?login=. No backend real vem da sessão do portal.
+// Portal do cliente: sem login próprio ainda (demo por ?login=). Lê via service role,
+// escopado pela org do cliente. Auth própria do portal é a próxima fase.
 export default async function PortalPage({ searchParams }: { searchParams: { login?: string } }) {
   const login = searchParams.login || 'horizonte';
-  const cliente = await getPessoaByLogin(login);
+  const { data: cliente } = await supabaseAdmin.from('pessoas').select('*').eq('portal_login', login).maybeSingle();
 
   if (!cliente) {
     return <EmptyState title={`Nenhum cliente com o login "${login}". Tente ?login=horizonte ou ?login=marina.`} />;
   }
+  const org = cliente.org_id;
 
-  const [processos, arquivos, atendimentos] = await Promise.all([
-    // só processos não-privados do próprio cliente
-    listProcessos({ clienteNome: cliente.nome, incluirPrivado: false }),
-    listArquivos({ compartilhadoCliente: true }),
-    listAtendimentos({ clienteNome: cliente.nome }),
+  const [{ data: processos }, { data: arquivos }, { data: atendimentos }] = await Promise.all([
+    supabaseAdmin.from('processos').select('*').eq('org_id', org).eq('cliente_nome', cliente.nome).eq('privado', false).order('criado_em', { ascending: false }),
+    supabaseAdmin.from('arquivos').select('*').eq('org_id', org).eq('compartilhado_cliente', true).order('nome'),
+    supabaseAdmin.from('atendimentos').select('*').eq('org_id', org).eq('cliente_nome', cliente.nome).order('criado_em', { ascending: false }),
   ]);
+  const procs = processos ?? [];
+  const arqs = arquivos ?? [];
+  const atds = atendimentos ?? [];
 
   return (
     <>
@@ -27,11 +32,11 @@ export default async function PortalPage({ searchParams }: { searchParams: { log
 
       <section className="mb-6">
         <h2 className="mb-3 text-sm font-semibold text-text">Seus processos</h2>
-        {processos.length === 0 ? (
+        {procs.length === 0 ? (
           <EmptyState title="Nenhum processo disponível para visualização." />
         ) : (
           <div className="grid gap-3">
-            {processos.map((p) => (
+            {procs.map((p: any) => (
               <Card key={p.id} className="flex items-center justify-between p-4">
                 <div>
                   <div className="font-medium text-text">{p.numero}</div>
@@ -46,14 +51,14 @@ export default async function PortalPage({ searchParams }: { searchParams: { log
 
       <section className="mb-6">
         <h2 className="mb-3 text-sm font-semibold text-text">Documentos compartilhados</h2>
-        {arquivos.length === 0 ? (
+        {arqs.length === 0 ? (
           <EmptyState title="Nenhum documento compartilhado com você ainda." />
         ) : (
           <Card className="divide-y divide-border">
-            {arquivos.map((a) => (
+            {arqs.map((a: any) => (
               <div key={a.id} className="flex items-center justify-between p-4 text-sm">
                 <span className="inline-flex items-center gap-2 text-text"><FileIcon size={15} className="text-muted" />{a.nome}</span>
-                <span className="text-muted">{formatBytes(a.tamanhoBytes)}</span>
+                <span className="text-muted">{formatBytes(a.tamanho_bytes)}</span>
               </div>
             ))}
           </Card>
@@ -62,11 +67,11 @@ export default async function PortalPage({ searchParams }: { searchParams: { log
 
       <section>
         <h2 className="mb-3 text-sm font-semibold text-text">Atendimentos</h2>
-        {atendimentos.length === 0 ? (
+        {atds.length === 0 ? (
           <EmptyState title="Nenhum atendimento aberto." />
         ) : (
           <Card className="divide-y divide-border">
-            {atendimentos.map((a) => (
+            {atds.map((a: any) => (
               <div key={a.id} className="flex items-center justify-between p-4 text-sm">
                 <span className="text-text">{a.assunto}</span>
                 <StatusPill status={a.status === 'em_dia' ? 'ativo' : a.status === 'finalizado' ? 'pago' : 'suspenso'} />

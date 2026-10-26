@@ -7,7 +7,7 @@ export default async function DashboardPage() {
   const d = await getDashboard();
   const max = Math.max(1, ...d.receitas12m.map((m) => m.valorCents));
   const cards = [
-    { icon: DollarSign, label: 'Receitas recebidas este mês', value: formatBRL(d.receitasMesCents) },
+    { icon: DollarSign, label: 'Receitas do mês', value: formatBRL(d.receitasMesCents) },
     { icon: CalendarDays, label: 'Eventos agendados para este mês', value: String(d.eventosMes) },
     { icon: Scale, label: 'Processos adicionados este mês', value: String(d.processosMes) },
     { icon: Rocket, label: 'Publicações recebidas este mês', value: String(d.publicacoesMes) },

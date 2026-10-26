@@ -1,14 +1,14 @@
 import { getEstatisticas, formatBRL } from '@/lib/data';
 import { PageHeader, Card } from '@/components/ui';
 
-function Bar({ label, value, max, tone }: { label: string; value: number; max: number; tone: string }) {
+function Bar({ label, value, max, tone, valueLabel }: { label: string; value: number; max: number; tone: string; valueLabel?: string }) {
   return (
     <div className="flex items-center gap-3">
-      <span className="w-20 text-sm text-muted">{label}</span>
+      <span className="w-20 shrink-0 text-sm text-muted">{label}</span>
       <div className="h-5 flex-1 overflow-hidden rounded-sm bg-border">
         <div className={`h-full ${tone}`} style={{ width: `${max ? Math.max(4, (value / max) * 100) : 0}%` }} />
       </div>
-      <span className="w-8 text-right text-sm font-medium text-text">{value}</span>
+      <span className="w-24 shrink-0 text-right text-sm font-medium text-text">{valueLabel ?? value}</span>
     </div>
   );
 }
@@ -37,12 +37,12 @@ export default async function EstatisticasPage() {
           </div>
         </Card>
         <Card className="p-4">
-          <h2 className="mb-4 text-sm font-semibold text-text">Financeiro</h2>
+          <h2 className="mb-4 text-sm font-semibold text-text">Financeiro (12 meses)</h2>
           <div className="space-y-3">
-            <Bar label="Receitas" value={Math.round(e.receitas / 100)} max={Math.round(maxFin / 100)} tone="bg-success" />
-            <Bar label="Despesas" value={Math.round(e.despesas / 100)} max={Math.round(maxFin / 100)} tone="bg-danger" />
+            <Bar label="Receitas" value={e.receitas} max={maxFin} tone="bg-success" valueLabel={formatBRL(e.receitas)} />
+            <Bar label="Despesas" value={e.despesas} max={maxFin} tone="bg-danger" valueLabel={formatBRL(e.despesas)} />
+            <Bar label="Resultado" value={Math.max(0, e.receitas - e.despesas)} max={maxFin} tone="bg-accent" valueLabel={formatBRL(e.receitas - e.despesas)} />
           </div>
-          <p className="mt-3 text-xs text-muted">Receitas {formatBRL(e.receitas)} · Despesas {formatBRL(e.despesas)}</p>
         </Card>
       </div>
     </>

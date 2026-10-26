@@ -180,7 +180,7 @@ export async function getDashboard(): Promise<DashboardResumo> {
   const ym = (dt: Date) => `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}`;
   const mesAtual = ym(now);
   const receitasMesCents = lanc
-    .filter((l) => l.tipo === 'receita' && l.situacao === 'pago' && l.vencimento.slice(0, 7) === mesAtual)
+    .filter((l) => l.tipo === 'receita' && l.vencimento.slice(0, 7) === mesAtual)
     .reduce((s, l) => s + l.valorCents, 0);
   const eventosMes = comps.filter((c) => c.inicioAt.slice(0, 7) === mesAtual).length;
   const meses = Array.from({ length: 12 }, (_, i) => {
